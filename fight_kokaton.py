@@ -8,7 +8,6 @@ import pygame as pg
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 NUM_OF_BOMBS = 5  # 爆弾の数
-F_P_SIZE = 50
 
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
@@ -86,7 +85,6 @@ class Bird:
         screen.blit(self.img, self.rct)
 
 
-
 class Beam:
     def __init__(self, bird: Bird):
         """
@@ -98,7 +96,6 @@ class Beam:
         self.rct.left = bird.rct.right  # こうかとんの右横座標
         self.rct.centery = bird.rct.centery  # こうかとんの中心縦座標
         self.vx, self.vy = +5, 0
-        
 
     def update(self, screen: pg.Surface):
         """
@@ -143,18 +140,36 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
         
-class Score(): # スコアクラス
-    # 初期化メソッド
+class Score:
     def __init__(self):
-        self.font = pg.font.SysFont("hgep006", F_P_SIZE)
-        self.point = 0
-    # スコア計算
-    def cal_score(self, point):
-        self.point += point * 100
-    # スコア描画
-    def draw(self, surface):
-        text = self.font.render("{:04d}".format(self.point),True, (63,255, 63))
-        surface.blit(text, [10, 5])
+        # フォントの設定
+        self.font = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+
+        # 文字色の設定（青）
+        self.color = (0, 0, 255)
+
+        # スコアの初期値の設定
+        self.score = 0
+
+        # 文字列Surfaceの生成
+        self.text = self.font.render(f"Score: {self.score}", True, self.color)
+
+        # 文字列の中心座標を設定（画面左下）
+        self.x = 100
+        self.y = 600  # 画面の下部から50の位置
+
+    def update(self):
+        # 現在のスコアを表示させる文字列Surfaceの生成
+        self.text = self.font.render(f"Score: {self.score}", True, self.color)
+
+    def increase_score(self, points=1):
+        # スコアを増やすメソッド
+        self.score += points
+
+    def blit(self, screen):
+        # スコアを画面に描画
+        screen.blit(self.text, (self.x, self.y))
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -163,6 +178,7 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam = None
+    score = Score()
 
     clock = pg.time.Clock()
     tmr = 0
@@ -191,9 +207,11 @@ def main():
                     beam = None
                     bombs[i] = None
                     bird.change_img(6, screen)
+                    score.increase_score()
                     pg.display.update()
         bombs = [bomb for bomb in bombs if bomb is not None]                        
-
+        score.update()
+        score.blit(screen)
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         for bomb in bombs:
