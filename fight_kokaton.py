@@ -8,6 +8,7 @@ import pygame as pg
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 NUM_OF_BOMBS = 5  # 爆弾の数
+F_P_SIZE = 50
 
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
@@ -85,6 +86,7 @@ class Bird:
         screen.blit(self.img, self.rct)
 
 
+
 class Beam:
     def __init__(self, bird: Bird):
         """
@@ -96,6 +98,7 @@ class Beam:
         self.rct.left = bird.rct.right  # こうかとんの右横座標
         self.rct.centery = bird.rct.centery  # こうかとんの中心縦座標
         self.vx, self.vy = +5, 0
+        
 
     def update(self, screen: pg.Surface):
         """
@@ -139,7 +142,19 @@ class Bomb:
             self.vy *= -1
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
-
+        
+class Score(): # スコアクラス
+    # 初期化メソッド
+    def __init__(self):
+        self.font = pg.font.SysFont("hgep006", F_P_SIZE)
+        self.point = 0
+    # スコア計算
+    def cal_score(self, point):
+        self.point += point * 100
+    # スコア描画
+    def draw(self, surface):
+        text = self.font.render("{:04d}".format(self.point),True, (63,255, 63))
+        surface.blit(text, [10, 5])
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
