@@ -162,7 +162,9 @@ class Score:
         # 現在のスコアを表示させる文字列Surfaceの生成
         self.text = self.font.render(f"Score: {self.score}", True, self.color)
 
-    def increase_score(self, points=1):
+    def increase_score(self, points=1): #イシュウ変更
+        #　変更した際に動かすとオブジェクトが消えた瞬間にゲームが終了するため変更できなかった。
+        
         # スコアを増やすメソッド
         self.score += points
 
